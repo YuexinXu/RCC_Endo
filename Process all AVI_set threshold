@@ -1,0 +1,26 @@
+inputDir = getDirectory("Choose Source Directory ");
+outputDir = getDirectory("Choose Destination Directory ");;
+list = getFileList(inputDir);
+setBatchMode(true);
+for (i=0; i<list.length; i++) {
+  showProgress(i+1, list.length);
+  run("AVI...", "select=["+inputDir+list[i]+"] avi = [" +inputDir+list[i]+"]  use convert");
+  name = getTitle(); 
+
+// Set Threshold run("Threshold...");
+  setThreshold(110, 255, "raw");
+
+// Measure Stack
+// This macro measure all the slices in a stack.
+  saveSettings;
+  setOption("Stack position", true);
+  for (n=1; n<=nSlices; n++) {
+    setSlice(n);
+    run("Measure");
+  }
+  selectWindow("Results");
+  saveAs("Measurements", outputDir + File.separator + name +"Results.csv");
+  close("Results");
+  close();
+  restoreSettings;
+}
